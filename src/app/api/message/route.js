@@ -5,14 +5,28 @@ import { NextResponse } from "next/server";
 
 export const GET = async (request) => {
   readDB();
+  let roomId = null;
 
-  // return NextResponse.json(
-  //   {
-  //     ok: false,
-  //     message: `Room is not found`,
-  //   },
-  //   { status: 404 }
-  // );
+  try {
+    const payload = checkToken();
+    roomId = payload.roomId;
+  } catch {
+    if (!foundroom)
+      return NextResponse.json(
+        {
+          ok: false,
+          message: `Room is not found`,
+        },
+        { status: 404 }
+      );
+  }
+  const foundroom = DB.rooms.find((x) => x.roomId === roomId);
+
+  return NextResponse.json({
+    ok: true,
+    roomId: DB.roomId,
+    message: DB.messages,
+  });
 };
 
 export const POST = async (request) => {
@@ -38,8 +52,6 @@ export const POST = async (request) => {
 };
 
 export const DELETE = async (request) => {
-  const payload = checkToken();
-
   // return NextResponse.json(
   //   {
   //     ok: false,
